@@ -7,9 +7,9 @@ function config() {
       process.env.MONGO_URL
     )
     .then(() => {
-      console.log("connected ");
+      console.log(" mongodb connected successfully ");
     }).catch((err)=>{
-      console.log("not connected",err);
+      console.log(" mongodb not connected ",err);
     })
 }
 
