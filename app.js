@@ -1,18 +1,17 @@
 // index.js
-const express = require("express");
-const cors = require("cors");
-const commonRouter = require ('./router/CommonRouter')
-const bodyParser = require('body-parser')
+const express = require('express');
 const app = express();
+const cors = require('cors');
 const PORT = process.env.PORT || 5000;
-require("dotenv").config();
-require('./Config/Config')()
+require('dotenv').config();
+require('./Config/Config')();
+const commonRouter = require('./router/CommonRouter');
 app.use(cors());
 
-app.use(bodyParser.urlencoded({extended:true}))
-app.use(bodyParser.json())
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 // Define routes here..
-app.use('/',commonRouter)
+app.use('/', commonRouter);
 
 
 app.listen(PORT, () => {

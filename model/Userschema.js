@@ -1,24 +1,25 @@
-const mongoose = require("mongoose")
+/* eslint-disable new-cap */
+const mongoose = require('mongoose');
 
 const UserSchema = mongoose.Schema(
     {
-       username:{
+      username: {
         type: String,
-        required:true
-       },
-       email:{
+        required: true,
+      },
+      email: {
         type: String,
-        required:true
-       },
-       mobileNumber:{
+        required: true,
+      },
+      mobileNumber: {
         type: Number,
-        required:true
-       },
-       password:{
+        required: true,
+      },
+      password: {
         type: String,
-        required:true
-       }
-    }
+        required: true,
+      },
+    },
 );
-const userModel = new mongoose.model("usercollection", UserSchema);
+const userModel = new mongoose.model('usercollection', UserSchema);
 module.exports = userModel;
