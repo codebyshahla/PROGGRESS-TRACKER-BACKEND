@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable new-cap */
 const userModel = require('../model/Userschema');
+const PersonalDietPlan = require('../model/PersonalDietPlan');
+const TimeManagement = require('../model/TimeManagement');
 const bcrypt = require('bcrypt');
 const {sendOtp} = require('../utility/twilio');
 const object = {
@@ -60,7 +62,7 @@ const object = {
       }
     } catch (error) {}
   },
-  postVerifyOtp: async (req, res)=>{
+  postVerifyOtp: async (req, res) => {
     try {
       // eslint-disable-next-line no-unused-vars
       const {otp} = req.body;
@@ -68,8 +70,31 @@ const object = {
       console.error('An error occured');
     }
   },
-  resetPassword: async (req, res)=>{
+  resetPassword: async (req, res) => {},
 
+  postPersonalDietPlan: async (req, res) => {
+    const {meal1, meal2, snack1, snack2, snack3} = req.body;
+    const addPersonalDiet = new PersonalDietPlan({
+      meal1: meal1,
+      meal2: meal2,
+      snack1: snack1,
+      snack2: snack2,
+      snack3: snack3,
+    });
+    await addPersonalDiet.save();
+    console.log(meal1, meal2, snack1, snack2, snack3);
+  },
+
+  postTimeManagent: async (req, res)=>{
+    const {title, time, priority} = req.body.newTask;
+    console.log(title, time, priority);
+    const addTimeManagement = new TimeManagement({
+      title: title,
+      time: time,
+      priority: priority,
+    });
+    await addTimeManagement.save();
+    console.log(title, time, priority);
   },
 };
 
