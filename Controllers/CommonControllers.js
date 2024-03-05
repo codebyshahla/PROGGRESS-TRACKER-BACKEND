@@ -1,19 +1,25 @@
+/* eslint-disable object-curly-spacing */
+/* eslint-disable quotes */
+/* eslint-disable indent */
 /* eslint-disable max-len */
 /* eslint-disable new-cap */
-const userModel = require('../model/Userschema');
-const PersonalDietPlan = require('../model/PersonalDietPlan');
-const TimeManagement = require('../model/TimeManagement');
-const bcrypt = require('bcrypt');
-const {sendOtp} = require('../utility/twilio');
+const userModel = require("../model/Userschema");
+const PersonalDietPlan = require("../model/PersonalDietPlan");
+const TimeManagement = require("../model/TimeManagement");
+const Habit = require("../model/Habit");
+const bcrypt = require("bcrypt");
+const { sendOtp } = require("../utility/twilio");
+const jwt = require("jsonwebtoken")
 const object = {
   postSignup: async (req, res) => {
     try {
+
       console.log(req.body.formData);
-      const {username, email, mobileNumber, password} = req.body.formData;
-      const existingUser = await userModel.findOne({email: email});
+      const { username, email, mobileNumber, password } = req.body.formData;
+      const existingUser = await userModel.findOne({ email: email });
 
       if (existingUser) {
-        res.status(400).json({error: 'user already exist. please login '});
+        res.status(400).json({ error: "user already exist. please login " });
       } else {
         const hashedPassword = await bcrypt.hash(password, 10);
         console.log(hashedPassword);
@@ -24,38 +30,47 @@ const object = {
           password: hashedPassword,
         });
         await user.save();
-        console.log(req.body, 'from body');
-        res.status(200).json({message: 'data saved successfully'});
+        const payload = {email};
+        const secretKey = process.env.JWT_TOKEN;
+        const expires =3*24*60*60;
+        const token = jwt.sign(payload, secretKey, {expiresIn: expires});
+        res.status(200).json({ message: "data saved successfully", token });
       }
     } catch (error) {
-      console.error('Error during signup:', error);
-      res.status(500).json({error: 'Internal server error.'});
+      console.error("Error during signup:", error);
+      res.status(500).json({ error: "Internal server error." });
     }
   },
   postLogin: async (req, res) => {
     try {
-      const {email, password} = req.body.formData;
-      console.log(email, password);
-      const existingUser = await userModel.findOne({email});
+      const { email, password } = req.body.formData;
+      console.log("useremail",email, password);
+      const existingUser = await userModel.findOne({ email });
+      console.log(existingUser)
       if (!existingUser) {
-        res.status(400).json({error: 'user already exist.'});
-        console.log('user  not found');
+        console.log("user  not found");
+        return res.status(404).json({ error: "user not exist." });
       }
       const isPasswordValid = await bcrypt.compare(
-          password,
-          existingUser.password,
+        password,
+        existingUser.password,
       );
       if (!isPasswordValid) {
-        return res.status(400).json({error: 'Invalid password.'});
+        return res.status(400).json({ error: "Invalid password." });
       }
+      const payload = {email};
+      const secretKey = process.env.JWT_TOKEN;
+      const expires =3*24*60*60;
+      const token = jwt.sign(payload, secretKey, {expiresIn: expires});
+      res.status(200).json({ message: "success", token });
     } catch (error) {
-      console.error('Error during login:', error);
-      res.status(500).json({error: 'Internal server error.'});
+      console.error("Error during login:", error);
+      res.status(500).json({ error: "Internal server error." });
     }
   },
   postforgotPassword: async (req, res) => {
     try {
-      const {phoneNumber} = req.body;
+      const { phoneNumber } = req.body;
       console.log(phoneNumber);
       if (phoneNumber) {
         sendOtp(phoneNumber);
@@ -65,15 +80,16 @@ const object = {
   postVerifyOtp: async (req, res) => {
     try {
       // eslint-disable-next-line no-unused-vars
-      const {otp} = req.body;
+      const { otp } = req.body;
     } catch (error) {
-      console.error('An error occured');
+      console.error("An error occured");
     }
   },
   resetPassword: async (req, res) => {},
 
   postPersonalDietPlan: async (req, res) => {
-    const {meal1, meal2, snack1, snack2, snack3} = req.body;
+    const { meal1, meal2, snack1, snack2, snack3 } = req.body;
+    console.log(meal1);
     const addPersonalDiet = new PersonalDietPlan({
       meal1: meal1,
       meal2: meal2,
@@ -85,8 +101,8 @@ const object = {
     console.log(meal1, meal2, snack1, snack2, snack3);
   },
 
-  postTimeManagent: async (req, res)=>{
-    const {title, time, priority} = req.body.newTask;
+  postTimeManagent: async (req, res) => {
+    const { title, time, priority } = req.body.newTask;
     console.log(title, time, priority);
     const addTimeManagement = new TimeManagement({
       title: title,
@@ -95,6 +111,22 @@ const object = {
     });
     await addTimeManagement.save();
     console.log(title, time, priority);
+  },
+
+  postHabit: async (req, res) => {
+    try {
+      const { hobby, time } = req.body;
+      console.log(hobby, time);
+      const addHabit = new Habit({
+        hobby: hobby,
+        time: time,
+      });
+      await addHabit.save();
+      res.status(200).json({ message: "data saved succcesfully" });
+      console.log(hobby, time);
+    } catch (err) {
+      console.error(err);
+    }
   },
 };
 
