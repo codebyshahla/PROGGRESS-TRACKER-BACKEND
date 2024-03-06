@@ -6,6 +6,8 @@ const PORT = process.env.PORT || 5000;
 require('dotenv').config();
 require('./Config/Config')();
 const commonRouter = require('./router/CommonRouter');
+const jwtMiddleware = require('./Middleware/Jwt');
+
 app.use(cors());
 
 app.use(express.urlencoded({extended: false}));

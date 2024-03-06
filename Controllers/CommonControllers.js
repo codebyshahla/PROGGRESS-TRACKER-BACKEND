@@ -9,11 +9,11 @@ const TimeManagement = require("../model/TimeManagement");
 const Habit = require("../model/Habit");
 const bcrypt = require("bcrypt");
 const { sendOtp } = require("../utility/twilio");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+
 const object = {
   postSignup: async (req, res) => {
     try {
-
       console.log(req.body.formData);
       const { username, email, mobileNumber, password } = req.body.formData;
       const existingUser = await userModel.findOne({ email: email });
@@ -44,9 +44,9 @@ const object = {
   postLogin: async (req, res) => {
     try {
       const { email, password } = req.body.formData;
-      console.log("useremail",email, password);
+      console.log("useremail", email, password);
       const existingUser = await userModel.findOne({ email });
-      console.log(existingUser)
+      console.log(existingUser);
       if (!existingUser) {
         console.log("user  not found");
         return res.status(404).json({ error: "user not exist." });
