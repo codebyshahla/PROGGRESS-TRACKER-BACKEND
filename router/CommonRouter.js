@@ -14,6 +14,7 @@ const {
   postPersonalDietPlan,
   postTimeManagent,
   postHabit,
+  getRole,
 } = require("../Controllers/CommonControllers");
 const jwtToken = require("../Middleware/Jwt");
 const publicKey = "BHLdUuWmZpRK-E5sPjvRsiEVhmApOLt36UKhkAh2JYHwaB5AFDmarXKEQXIvb465IWvLBNiL0zbfJvV8LLltQcU";
@@ -28,5 +29,7 @@ router.post("/TimeManagement", jwtToken, postTimeManagent);
 router.post("/forgotPassword", postforgotPassword);
 router.post("/otpVerify", postVerifyOtp);
 router.post("/Habit", jwtToken, postHabit);
+router.get('/getRole', jwtToken, getRole);
+
 
 module.exports = router;

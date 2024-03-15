@@ -15,7 +15,8 @@ const object = {
   postSignup: async (req, res) => {
     try {
       console.log(req.body.formData);
-      const { username, email, mobileNumber, password } = req.body.formData;
+      const { username, email, mobileNumber, password, role } =
+        req.body.formData;
       const existingUser = await userModel.findOne({ email: email });
 
       if (existingUser) {
@@ -28,13 +29,16 @@ const object = {
           email: email,
           mobileNumber: mobileNumber,
           password: hashedPassword,
+          role: role,
         });
         await user.save();
-        const payload = {email};
+        const payload = { email };
         const secretKey = process.env.JWT_TOKEN;
-        const expires =3*24*60*60;
-        const token = jwt.sign(payload, secretKey, {expiresIn: expires});
-        res.status(200).json({ message: "data saved successfully", token });
+        const expires = 3 * 24 * 60 * 60;
+        const token = jwt.sign(payload, secretKey, { expiresIn: expires });
+        res
+          .status(200)
+          .json({ message: "data saved successfully", token, role });
       }
     } catch (error) {
       console.error("Error during signup:", error);
@@ -58,11 +62,13 @@ const object = {
       if (!isPasswordValid) {
         return res.status(400).json({ error: "Invalid password." });
       }
-      const payload = {email};
+      const payload = { email };
       const secretKey = process.env.JWT_TOKEN;
-      const expires =3*24*60*60;
-      const token = jwt.sign(payload, secretKey, {expiresIn: expires});
-      res.status(200).json({ message: "success", token });
+      const expires = 3 * 24 * 60 * 60;
+      const token = jwt.sign(payload, secretKey, { expiresIn: expires });
+      res
+        .status(200)
+        .json({ message: "success", token, role: existingUser.role });
     } catch (error) {
       console.error("Error during login:", error);
       res.status(500).json({ error: "Internal server error." });
@@ -126,6 +132,19 @@ const object = {
       console.log(hobby, time);
     } catch (err) {
       console.error(err);
+    }
+  },
+  getRole: async (req, res) => {
+    try {
+      const token = req.headers.authorization.split(" ")[1];
+      const decodeToken = jwt.verify(token, process.env.JWT_TOKEN);
+      const email = decodeToken.email;
+      const checkRole = await userModel.findOne({ email: email });
+      const role = checkRole.role;
+      res.status(200).json({ role });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error });
     }
   },
 };
