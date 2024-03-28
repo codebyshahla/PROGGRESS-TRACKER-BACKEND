@@ -57,7 +57,7 @@ const object = {
       }
       const isPasswordValid = await bcrypt.compare(
         password,
-        existingUser.password,
+        existingUser.password
       );
       if (!isPasswordValid) {
         return res.status(400).json({ error: "Invalid password." });
@@ -145,6 +145,30 @@ const object = {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error });
+    }
+  },
+  getMail: async (req, res) => {
+    try {
+      const token = req.headers.authorization.split(" ")[1];
+      const getToken = jwt.verify(token, process.env.JWT_TOKEN);
+      const email = getToken.email;
+      console.log(email);
+      res.status(200).json({ email });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error });
+    }
+  },
+  getUsers: async (req, res) => {
+    try {
+      const users = await userModel.find();
+      const filterdUsers = users.filter((users) => {
+       return users.role !== "admin";
+      });
+      console.log(filterdUsers);
+      res.status(200).json({ filterdUsers });
+    } catch (error) {
+      console.error(error);
     }
   },
 };
