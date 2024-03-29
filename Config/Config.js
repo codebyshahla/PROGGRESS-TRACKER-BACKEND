@@ -1,4 +1,8 @@
-const { default: mongoose } = require("mongoose");
+/* eslint-disable comma-dangle */
+/* eslint-disable quotes */
+/* eslint-disable indent */
+/* eslint-disable require-jsdoc */
+const {default: mongoose} = require("mongoose");
 
 
 function config() {
